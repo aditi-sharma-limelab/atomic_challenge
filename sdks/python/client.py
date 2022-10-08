@@ -5,10 +5,43 @@ import sys
 import json
 import socket
 
+space_vec = []
+
+# to keep track of open spaces
+def init_board(board):
+    # all spaces empty to start
+    for i in range(8):
+      for j in range(8):
+        space_vec.append({i,j})
+
+    # remove the first four taken spaces
+    space_vec.remove({3,3})
+    space_vec.remove({3,4})
+    space_vec.remove({4,3})
+    space_vec.remove({4,4})
+
+def valid(move, board):
+  # 1 piece in some direction? -1<x<7 - > check the directions
+  # search for black piece at end
+  # sum the point total - return
+  # 0 for invalid
+
+
 def get_move(player, board):
-  # TODO determine valid moves
-  # TODO determine best move
-  return [2, 3]
+  top_move = {-1,-1}
+  top_count = 0
+  for i in range(len(space_vec)):
+    if valid(space_vec[i][0], space_vec[i][1]):
+      move_count = points(space_vec[i][0], space_vec[i][1])
+      if move_count > top_count:
+        top_count = move_count
+        top_move = {space_vec[i][0], space_vec[i][1]}
+
+  if top_move != 0:
+    space_vec.remove(top_move)
+    return [top_move[0], top_move[1]]
+  else:
+    return []
 
 def prepare_response(move):
   response = '{}\n'.format(move).encode()
