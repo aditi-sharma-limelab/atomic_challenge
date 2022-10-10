@@ -8,6 +8,7 @@ import json
 import socket
 
 space_vec = []
+turns = 1
 
 # to keep track of open spaces
 def init_board():
@@ -21,6 +22,10 @@ def init_board():
   space_vec.remove((3,4))
   space_vec.remove((4,3))
   space_vec.remove((4,4))
+
+def update_turns():
+  global turns
+  turns += 1
 
 # traverse the board to find the space that the opponent moved upon
 def find_and_remove_opponent(board):
@@ -82,7 +87,12 @@ def get_move(player, board):
   for i in range(len(space_vec)):
     move_count = valid(player, (space_vec[i][0], space_vec[i][1]), board)
     if move_count:
-      if move_count >= top_count:
+      # when there are more open spaces, it is beneficial to 'play small'
+      if len(space_vec) < 10 and top_count > 0:
+        if move_count < top_count:
+          top_count = move_count
+          top_move = (space_vec[i][0], space_vec[i][1])
+      elif move_count >= top_count:
         top_count = move_count
         top_move = (space_vec[i][0], space_vec[i][1])
 
@@ -115,6 +125,7 @@ if __name__ == "__main__":
       board = json_data['board']
       maxTurnTime = json_data['maxTurnTime']
       player = json_data['player']
+      update_turns()
       print(player, maxTurnTime, board)
       find_and_remove_opponent(board)
       move = get_move(player, board)
